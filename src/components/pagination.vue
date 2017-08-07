@@ -6,30 +6,33 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="td in showInfo">
-        <td>{{td.name}}</td>
+      <tr v-for="(td,index) in showInfo" :class="randomClass(index)">
         <td>{{td.id}}</td>
+        <td>{{td.name}}</td>
+        <td>{{td.email}}</td>
       </tr>
       </tbody>
       <tfoot>
-      <tr>
-        <td colspan="2">
-            <button class="btn btn-default" @click="pageShow(1)"><a>首页</a></button>
-            <button :class="{disabled:isPrev}" class="btn btn-default" @click="shift('prev')"><a>上一页</a></button>
-            <div class="show-part">
-              <ul class="pagination">
-                <li v-for="page in pageNumbers" :class="{active:page.isActive}">
-                  <a @click="pageShow(page.index)">{{page.index}}</a>
-                </li>
-              </ul>
-            </div>
-            <button class="btn btn-default">
-              <a>
-                <input placeholder="页码" v-model="inputPage" class="inputPage" type="text" @keyup="pageShow(inputPage)">
-              </a>
-            </button>
-            <button class="btn btn-default" :class="{disabled:isNext}" @click="shift('next')"><a>下一页</a></button>
-            <button class="btn btn-default" @click="pageShow(len)"><a>尾页</a></button>
+        <tr>
+        <td colspan="3">
+            <nav class="page-plugin">
+              <button class="btn btn-default" @click="pageShow(1)"><a>首页</a></button>
+              <button :class="{disabled:isPrev}" class="btn btn-default" @click="shift('prev')"><a>上一页</a></button>
+              <div class="show-part">
+                <ul class="pagination">
+                  <li v-for="page in pageNumbers" :class="{active:page.isActive}">
+                    <a @click="pageShow(page.index)">{{page.index}}</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default">
+                <a>
+                  <input placeholder="页码" v-model="inputPage" class="input-page" type="text" @keyup="pageShow(inputPage)">
+                </a>
+              </button>
+              <button class="btn btn-default" :class="{disabled:isNext}" @click="shift('next')"><a>下一页</a></button>
+              <button class="btn btn-default" @click="pageShow(len)"><a>尾页</a></button>
+            </nav>
         </td>
       </tr>
       </tfoot>
@@ -37,6 +40,7 @@
 </template>
 <script>
 import $ from 'jquery'
+import Mock from 'mockjs'
 export default {
     data () {
         return {
@@ -54,13 +58,18 @@ export default {
         }
     },
     mounted () {
-      this.$http.get('http://rap.taobao.org/mockjsdata/22379/api/data').then(function (res) {
-        this.info = res.data.data;
+        this.info = Mock.mock({
+          'data|200':[{
+            'id|+1': 1,
+            'name': '@name',
+            'email': '@email'
+          }]
+        }).data;
+        console.log(this.info.data);
         this.pageNumber(this.perPage, this.info);
         this.cutData(this.perPage, this.info);
         this.showInfo = this.cutInfo[0];
         if(this.len>10) this.isOver = true;
-      });
     },
     methods: {
       //格式化数据
@@ -147,6 +156,13 @@ export default {
             $('ul.pagination').css('marginLeft', -(this.len-5)*41+'px');
           }
         }
+      },
+      //表格行颜色填充
+      randomClass (index) {
+        switch (index%2) {
+          case 0: return 'warning';
+          default: return 'info';
+        }
       }
     }
 }
@@ -156,7 +172,7 @@ export default {
     cursor: pointer;
     text-decoration: none;
   }
-  input.inputPage {
+  input.input-page {
     border: 0;
     outline: 0;
     padding-top: 0;
@@ -180,5 +196,9 @@ export default {
   ul.pagination li a{
     width: 42px;
     text-align: center;
+  }
+  nav.page-plugin {
+    width: 600px;
+    margin: 0 auto;
   }
 </style>
