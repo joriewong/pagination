@@ -25,13 +25,15 @@
                   </li>
                 </ul>
               </div>
-              <button class="btn btn-default">
-                <a>
-                  <input placeholder="页码" v-model="inputPage" class="input-page" type="text" @keyup="pageShow(inputPage)">
-                </a>
-              </button>
               <button class="btn btn-default" :class="{disabled:isNext}" @click="shift('next')"><a>下一页</a></button>
               <button class="btn btn-default" @click="pageShow(len)"><a>尾页</a></button>
+              <a>共{{this.len}}页，跳转至</a>
+              <button class="btn btn-default">
+                <a>
+                  <input v-model="inputPage" class="input-page" type="text" @keyup="pageShow(inputPage)">
+                </a>
+              </button>
+              <a>页</a>
             </nav>
         </td>
       </tr>
@@ -58,6 +60,7 @@ export default {
         }
     },
     mounted () {
+        //dev环境
         this.info = Mock.mock({
           'data|200':[{
             'id|+1': 1,
@@ -65,11 +68,16 @@ export default {
             'email': '@email'
           }]
         }).data;
-        console.log(this.info.data);
         this.pageNumber(this.perPage, this.info);
         this.cutData(this.perPage, this.info);
         this.showInfo = this.cutInfo[0];
-        if(this.len>10) this.isOver = true;
+        //prod环境
+//        this.$http.get("http://rapapi.org/mockjsdata/22379/api/data").then(function (res) {
+//          this.info  = res.data.data;
+//          this.pageNumber(this.perPage, this.info);
+//          this.cutData(this.perPage, this.info);
+//          this.showInfo = this.cutInfo[0];
+//        })
     },
     methods: {
       //格式化数据
@@ -177,7 +185,7 @@ export default {
     outline: 0;
     padding-top: 0;
     padding-bottom: 0;
-    width: 34px;
+    width: 21px;
   }
   button.btn {
     outline: 0;
@@ -198,7 +206,7 @@ export default {
     text-align: center;
   }
   nav.page-plugin {
-    width: 600px;
+    width: 680px;
     margin: 0 auto;
   }
 </style>
