@@ -170,7 +170,7 @@ export default {
 <style scoped>
   a {
     cursor: pointer;
-    text-decoration: none;
+    text-decoration: none !important;
   }
   input.input-page {
     border: 0;
